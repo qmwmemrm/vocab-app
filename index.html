@@ -314,6 +314,31 @@ function runSeedImportOnce() {
   return true;
 }
 
+const SEED_IMPORT_JA_2 = [
+  {w:"簡易", p:"かんい", m:"간편함", c:0},
+  {w:"落し物", p:"おとしもの", m:"분실물", c:0},
+  {w:"かぎ", p:"", m:"열쇠", c:0},
+  {w:"それゆえ", p:"", m:"그러므로,따라서", c:0},
+  {w:"目安", p:"めやす", m:"기준,목표", c:0},
+  {w:"半分", p:"はんぶん", m:"절반", c:0},
+  {w:"非常", p:"ひじょう", m:"비상", c:0},
+  {w:"満員", p:"まんいん", m:"만석,만원", c:0},
+  {w:"ちょうど", p:"", m:"정확히,딱", c:0}
+];
+
+function runSeedImportOnce2() {
+  if (state._seedJa2) return false;
+  const day = findOrCreateTodayDay("ja");
+  SEED_IMPORT_JA_2.forEach(item => {
+    day.rows.push({
+      id: uid(), word: item.w, pron: item.p, meaning: item.m,
+      addedDate: todayStr(), checkCount: item.c, lastCheckedDate: null
+    });
+  });
+  state._seedJa2 = true;
+  return true;
+}
+
 function runResetAllChecksOnce() {
   if (state._resetChecks1) return false;
   LANGS.forEach(l => {
@@ -350,9 +375,10 @@ async function load() {
   } catch (e) {}
   LANGS.forEach(l => { if (!state[l.id]) state[l.id] = { months: [] }; });
   const imported = runSeedImportOnce();
+  const imported2 = runSeedImportOnce2();
   const wasReset = runResetAllChecksOnce();
   if (imported) { currentLang = "ja"; }
-  if (imported || wasReset) { scheduleSave(); }
+  if (imported || imported2 || wasReset) { scheduleSave(); }
   renderLangTabs();
   renderMain();
 }
